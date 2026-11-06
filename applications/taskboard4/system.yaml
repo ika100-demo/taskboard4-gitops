@@ -52,9 +52,12 @@ components:
         cpu: 500m
         memory: 512Mi
     instances:
-      dev: {}
+      dev:
+        replicas: 2
     expose:
       host: taskboard4-api
+    uses:
+      - postgres
   taskboard4-web:
     type: website
     lang: typescript
@@ -71,6 +74,7 @@ components:
       next-cache: /app/.next/cache
     env:
       NODE_ENV: production
+      TASKBOARD4_API_URL: http://taskboard4-api
     secretRefs: []
     resources:
       requests:
@@ -83,3 +87,13 @@ components:
       dev: {}
     expose:
       host: taskboard4-web
+resources:
+  postgres:
+    type: database
+    version: 17
+    replicas: 1
+    storage: 1Gi
+    instances:
+      prod:
+        replicas: 3
+        storage: 20Gi
