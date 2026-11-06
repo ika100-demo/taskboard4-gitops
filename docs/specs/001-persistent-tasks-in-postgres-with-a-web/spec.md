@@ -1,7 +1,7 @@
 ---
 spec_id: 001-persistent-tasks-in-postgres-with-a-web
 title: Persistent tasks in Postgres with a web UI
-status: approved
+status: done
 priority: P1
 shape: gitops-app
 ---
@@ -68,3 +68,5 @@ As a person using taskboard4, I want to create a task with a title and an option
 - 2026-11-06 created
 - 2026-11-06 amended: answered all open questions; AC-001.2 states two API instances in dev; AC-001.6 and AC-001.9 show due dates as `YYYY-MM-DD`; database backups and the starter page added to Non-goals.
 - 2026-11-06 approved
+- 2026-11-06 building
+- 2026-11-06 done
