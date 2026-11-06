@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: taskboard4-web
+  labels:
+    app: taskboard4-web
+    app.kubernetes.io/name: taskboard4-web
+    app.kubernetes.io/part-of: taskboard4
+    app.kubernetes.io/managed-by: gitops-app
+spec:
+  type: ClusterIP
+  selector:
+    app: taskboard4-web
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
