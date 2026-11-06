@@ -1,47 +1,67 @@
 ---
 plan_id: 001-persistent-tasks-in-postgres-with-a-web
 spec: 001-persistent-tasks-in-postgres-with-a-web
-feature: Persistent tasks in Postgres, shared by two API instances, with a task list and create form in the web app
+feature: Persistent tasks in Postgres, shared by two API instances, with a task list and create form in
+  the web app
 gitops_app: ika100-demo/taskboard4-gitops
-status: draft
+status: completed
 repos:
-  - id: taskboard4-gitops
-    shape: gitops-app
-    summary: Postgres for taskboard4-api, two API instances in dev, API address for taskboard4-web
-    acs: [AC-001.1, AC-001.2, AC-001.6]
-    arguments: |
-      Besides the gitops operations below, set two replicas on the dev instance of taskboard4-api:
-      `cplat component set taskboard4-api --instance dev --replicas 2` (writes instances.dev.replicas;
-      the plan's `gitops:` list has no replicas operation). Land this PR before taskboard4-api merges,
-      so the persistent API finds DATABASE_URL on its first dev rollout.
-    gitops:
-      - {resource: postgres}
-      - {uses: postgres, component: taskboard4-api}
-      - {env: {TASKBOARD4_API_URL: 'http://taskboard4-api'}, component: taskboard4-web}
-    depends_on: []
-    done: false
-  - id: taskboard4-api
-    shape: service-python
-    summary: Keep tasks in Postgres, answer 503 and report not ready while the database is down
-    acs: [AC-001.1, AC-001.2, AC-001.3, AC-001.4, AC-001.5]
-    arguments: |
-      This spec supersedes component spec 001-create-and-list-tasks: withdraw its AC-001.10
-      ("tasks gone after restart") and drop its non-goal against persistence and multiple instances,
-      through `/component:spec --amend 001` in this repo; the other criteria of spec 001 stay and their
-      tests must keep passing against Postgres. Connection comes from DATABASE_URL (accept both
-      `postgres://` and `postgresql://`), injected by the platform's postgres resource.
-    depends_on: [taskboard4-gitops]
-    done: false
-  - id: taskboard4-web
-    shape: web-nextjs
-    summary: Task list and create form on the root page, talking to the Task API
-    acs: [AC-001.6, AC-001.7, AC-001.8, AC-001.9, AC-001.10, AC-001.11, AC-001.12]
-    arguments: |
-      The API base URL comes from the server-side env variable TASKBOARD4_API_URL (in dev
-      `http://taskboard4-api`); the browser never calls the API directly. Replace the template starter
-      page at `/`.
-    depends_on: []
-    done: false
+- id: taskboard4-gitops
+  shape: gitops-app
+  summary: Postgres for taskboard4-api, two API instances in dev, API address for taskboard4-web
+  acs:
+  - AC-001.1
+  - AC-001.2
+  - AC-001.6
+  arguments: |
+    Besides the gitops operations below, set two replicas on the dev instance of taskboard4-api:
+    `cplat component set taskboard4-api --instance dev --replicas 2` (writes instances.dev.replicas;
+    the plan's `gitops:` list has no replicas operation). Land this PR before taskboard4-api merges,
+    so the persistent API finds DATABASE_URL on its first dev rollout.
+  gitops:
+  - resource: postgres
+  - uses: postgres
+    component: taskboard4-api
+  - env:
+      TASKBOARD4_API_URL: http://taskboard4-api
+    component: taskboard4-web
+  depends_on: []
+  done: true
+- id: taskboard4-api
+  shape: service-python
+  summary: Keep tasks in Postgres, answer 503 and report not ready while the database is down
+  acs:
+  - AC-001.1
+  - AC-001.2
+  - AC-001.3
+  - AC-001.4
+  - AC-001.5
+  arguments: |
+    This spec supersedes component spec 001-create-and-list-tasks: withdraw its AC-001.10
+    ("tasks gone after restart") and drop its non-goal against persistence and multiple instances,
+    through `/component:spec --amend 001` in this repo; the other criteria of spec 001 stay and their
+    tests must keep passing against Postgres. Connection comes from DATABASE_URL (accept both
+    `postgres://` and `postgresql://`), injected by the platform's postgres resource.
+  depends_on:
+  - taskboard4-gitops
+  done: true
+- id: taskboard4-web
+  shape: web-nextjs
+  summary: Task list and create form on the root page, talking to the Task API
+  acs:
+  - AC-001.6
+  - AC-001.7
+  - AC-001.8
+  - AC-001.9
+  - AC-001.10
+  - AC-001.11
+  - AC-001.12
+  arguments: |
+    The API base URL comes from the server-side env variable TASKBOARD4_API_URL (in dev
+    `http://taskboard4-api`); the browser never calls the API directly. Replace the template starter
+    page at `/`.
+  depends_on: []
+  done: true
 gitops_pin: []
 ---
 
